@@ -46,5 +46,10 @@
     "url": "https://github.com/sjinks/express-ip-filter-middleware/issues"
   },
   "homepage": "https://github.com/sjinks/express-ip-filter-middleware#readme",
+  "files": [
+    "dist/index.d.ts",
+    "dist/index.js",
+    "dist/index.js.map"
+  ],
   "description": "Express middleware for access control using IP / CIDR lists"
 }
