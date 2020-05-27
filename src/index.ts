@@ -11,16 +11,16 @@ export interface Options {
 type IPRange = [IPv4 | IPv6, number];
 
 function parse(item: string): IPRange | null {
-    if (item.indexOf('/') !== -1) {
-        return parseCIDR(item);
-    }
+    try {
+        if (item.indexOf('/') !== -1) {
+            return parseCIDR(item);
+        }
 
-    if (isValid(item)) {
         const addr = processIP(item);
         return [addr, addr.kind() === 'ipv4' ? 32 : 128];
+    } catch (e) {
+        return null;
     }
-
-    return null;
 }
 
 function matchIP(ip: IPv4 | IPv6, list: IPRange[]): boolean {
@@ -39,11 +39,11 @@ export class IPBlockedError extends Error {
     }
 }
 
-export default function(options: Options): RequestHandler {
+export default function (options: Options): RequestHandler {
     const allow = (options.allow || []).map(parse).filter(Boolean) as IPRange[];
     const deny = (options.deny || []).map(parse).filter(Boolean) as IPRange[];
 
-    return function(req: Request, res: Response, next: NextFunction): void {
+    return function (req: Request, res: Response, next: NextFunction): void {
         const ip = options.ipOverride ? options.ipOverride(req) : req.ip;
         if (!isValid(ip)) {
             next(new Error(`IP Address ${ip} is not valid`));
