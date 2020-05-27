@@ -85,8 +85,13 @@ describe('express-ip-filter-middleware', (): void => {
         return request(server).get('/').set('X-Forwarded-For', '2001:0db8:85a3:0000:0000:8a2e:0370:7334').expect(200);
     });
 
-    it('should ignore invalid CIDRs', async (): Promise<unknown> => {
+    it('should ignore invalid CIDRs (IP)', async (): Promise<unknown> => {
         const server = buildServer({ mode: 'whitelist', allow: ['2001:0db8:85az::/48'] });
         return request(server).get('/').set('X-Forwarded-For', '2001:0db8:85a3:0000:0000:8a2e:0370:7334').expect(403);
+    });
+
+    it('should ignore invalid CIDRs (prefix)', async (): Promise<unknown> => {
+        const server = buildServer({ mode: 'whitelist', allow: ['192.168.88.1/33'] });
+        return request(server).get('/').set('X-Forwarded-For', '192.168.88.1').expect(403);
     });
 });
