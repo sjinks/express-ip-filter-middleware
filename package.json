@@ -35,7 +35,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "ipaddr.js": "^1.9.1"
+    "ipaddr.js": "^2.0.0"
   },
   "repository": {
     "type": "git",
