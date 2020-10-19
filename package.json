@@ -1,10 +1,13 @@
 {
   "name": "express-ip-filter-middleware",
   "version": "1.0.17",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "jest",
+    "prepare": "npm run build"
   },
   "keywords": [
     "express",
