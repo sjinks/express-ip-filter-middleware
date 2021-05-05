@@ -17,7 +17,7 @@ import express from 'express';
 import middleware from 'express-ip-filter-middleware';
 
 const options = {
-    mode: 'whitelist,
+    mode: 'whitelist',
     allow: ['192.168.0.0/16'],
     deny: ['192.168.0.1'],
 };
