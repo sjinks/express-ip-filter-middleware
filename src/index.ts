@@ -60,10 +60,10 @@ export default function (options: Options): RequestHandler {
                 - mode is blacklist AND ip is allowed
                 - mode is blacklist AND ip is NOT denied
         */
-        if ((allowed && !denied) || (options.mode === 'blacklist' && (allowed || !denied))) {
-            next();
-        }
-
-        next(new IPBlockedError('Access denied', ip));
+        const error =
+            (allowed && !denied) || (options.mode === 'blacklist' && (allowed || !denied))
+                ? undefined
+                : new IPBlockedError('Access denied', ip);
+        next(error);
     };
 }
