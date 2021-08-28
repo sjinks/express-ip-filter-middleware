@@ -2,16 +2,19 @@ name: Build and Test CI
 
 on:
   push:
-    branches: [ master ]
+    branches:
+      - master
   pull_request:
-    branches: [ master ]
+    branches:
+      - master
+  workflow_dispatch:
 
 jobs:
   ci:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node_version: ['10', '12', '14']
+        node_version: ['12', '14', '16']
 
     steps:
       - uses: actions/checkout@v2.3.4

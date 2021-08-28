@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response, RequestHandler } from 'express';
-import ipaddr, { IPv4, IPv6, parseCIDR, process as processIP, isValid } from 'ipaddr.js';
+import ipaddr, { IPv4, IPv6, parseCIDR, isValid } from 'ipaddr.js';
 
 export interface Options {
     mode: 'whitelist' | 'blacklist';
@@ -16,7 +16,7 @@ function parse(item: string): IPRange | null {
             return parseCIDR(item);
         }
 
-        const addr = processIP(item);
+        const addr = ipaddr.process(item);
         return [addr, addr.kind() === 'ipv4' ? 32 : 128];
     } catch (e) {
         return null;
@@ -50,7 +50,7 @@ export default function (options: Options): RequestHandler {
             return;
         }
 
-        const addr = processIP(ip);
+        const addr = ipaddr.process(ip);
         const allowed = matchIP(addr, allow);
         const denied = matchIP(addr, deny);
 
