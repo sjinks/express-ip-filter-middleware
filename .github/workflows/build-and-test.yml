@@ -11,6 +11,8 @@ on:
 
 jobs:
   ci:
+    permissions:
+      contents: read
     name: Build and test (Node ${{ matrix.node_version }})
     runs-on: ubuntu-latest
     strategy:
