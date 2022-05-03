@@ -31,7 +31,7 @@
     "eslint-formatter-gha": "^1.2.0",
     "eslint-plugin-prettier": "^4.0.0",
     "express": "^4.17.1",
-    "jest": "^27.0.1",
+    "jest": "^28.0.0",
     "merge": "^2.1.0",
     "prettier": "^2.2.1",
     "supertest": "^6.1.1",
