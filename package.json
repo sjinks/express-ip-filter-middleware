@@ -25,7 +25,7 @@
     "@types/jest": "^29.0.0",
     "@types/supertest": "^2.0.10",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-formatter-gha": "^1.2.0",
