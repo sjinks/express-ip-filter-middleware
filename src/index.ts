@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response, RequestHandler } from 'express';
-import ipaddr, { IPv4, IPv6, parseCIDR, isValid } from 'ipaddr.js';
+import type { NextFunction, Request, Response, RequestHandler } from 'express';
+import ipaddr, { type IPv4, type IPv6, parseCIDR, isValid } from 'ipaddr.js';
 
 export interface Options {
     mode: 'whitelist' | 'blacklist';
@@ -43,8 +43,15 @@ export default function (options: Options): RequestHandler {
     const allow = (options.allow || []).map(parse).filter(Boolean) as IPRange[];
     const deny = (options.deny || []).map(parse).filter(Boolean) as IPRange[];
 
-    return function (req: Request, res: Response, next: NextFunction): void {
+    return function (req: Request, _res: Response, next: NextFunction): void {
         const ip = options.ipOverride ? options.ipOverride(req) : req.ip;
+
+        // `ip` may be undefined if the `req.socket` is destroyed (for example, if the client disconnected).
+        if (ip === undefined) {
+            next();
+            return;
+        }
+
         if (!isValid(ip)) {
             next(new Error(`IP Address ${ip} is not valid`));
             return;
