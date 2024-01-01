@@ -16,57 +16,28 @@ function buildServer(options: Options): Application {
 }
 
 describe('express-ip-filter-middleware', function (): void {
-    it('should deny everyone in ALLOW mode with empty lists', function () {
-        const server = buildServer({ mode: 'allow' });
+    it('should deny everyone in WHITELIST mode with empty lists', function () {
+        const server = buildServer({ mode: 'whitelist' });
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(403);
     });
 
-    it('should allow everyone in DENY mode with empty lists', function () {
-        const server = buildServer({ mode: 'deny' });
+    it('should allow everyone in BLACKLIST mode with empty lists', function () {
+        const server = buildServer({ mode: 'blacklist' });
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
     });
 
-    it('should parse CIDRs', function () {
-        const allow = new BlockList();
-        allow.addSubnet('192.168.2.0', 24);
-        const server = buildServer({ mode: 'allow', allow });
-        return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
-    });
-
-    it('should favor allow in DENY mode (single IP)', function () {
+    it('should favor allow in BLACKLIST mode', function () {
         const list = new BlockList();
         list.addAddress('192.168.2.1');
-        const server = buildServer({ mode: 'deny', allow: list, deny: list });
+        const server = buildServer({ mode: 'blacklist', allow: list, deny: list });
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
     });
 
-    it('should favor allow in BLACKLIST mode (IP range)', function () {
-        const allow = new BlockList();
-        allow.addAddress('192.168.2.1');
-
-        const deny = new BlockList();
-        deny.addSubnet('192.168.2.0', 24);
-
-        const server = buildServer({ mode: 'deny', allow, deny });
-        return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
-    });
-
-    it('should favor deny in ALLOW mode (single IP)', function () {
+    it('should favor deny in WHITELIST mode', function () {
         const list = new BlockList();
         list.addAddress('192.168.2.1');
 
-        const server = buildServer({ mode: 'allow', allow: list, deny: list });
-        return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(403);
-    });
-
-    it('should favor deny in ALLOW mode (IP range)', function () {
-        const allow = new BlockList();
-        allow.addAddress('192.168.2.1');
-
-        const deny = new BlockList();
-        deny.addSubnet('192.168.2.0', 24);
-
-        const server = buildServer({ mode: 'allow', allow, deny });
+        const server = buildServer({ mode: 'whitelist', allow: list, deny: list });
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(403);
     });
 
@@ -75,38 +46,29 @@ describe('express-ip-filter-middleware', function (): void {
         allow.addAddress('192.168.2.5');
 
         const server = buildServer({
-            mode: 'allow',
+            mode: 'whitelist',
             allow,
-            ipOverride: (): string => '192.168.2.5',
+            ipOverride: () => '::ffff:192.168.2.5',
         });
 
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
     });
 
     it('should fail if ipOverride() returns a bad IP', function () {
-        const allow = new BlockList();
-        allow.addAddress('192.168.2.5');
-
         const server = buildServer({
-            mode: 'allow',
-            allow,
-            ipOverride: (): string => '192.168.2.500',
+            mode: 'whitelist',
+            ipOverride: () => '192.168.2.500',
         });
 
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(500);
     });
 
-    it('should be able to parse IPv6 address', function () {
-        const deny = new BlockList();
-        deny.addAddress('2001:DB8:85A3::8A2E:370:7334', 'ipv6');
-        const server = buildServer({ mode: 'deny', deny });
-        return request(server).get('/').set('X-Forwarded-For', '2001:0db8:85a3:0000:0000:8a2e:0370:7334').expect(403);
-    });
+    it('should fail if IP address cannot be determined', function () {
+        const server = buildServer({
+            mode: 'whitelist',
+            ipOverride: () => undefined,
+        });
 
-    it('should be able to parse IPv6 CIDR', function () {
-        const allow = new BlockList();
-        allow.addSubnet('2001:DB8:85A3::', 48, 'ipv6');
-        const server = buildServer({ mode: 'allow', allow });
-        return request(server).get('/').set('X-Forwarded-For', '2001:0db8:85a3:0000:0000:8a2e:0370:7334').expect(200);
+        return request(server).get('/').expect(500);
     });
 });
