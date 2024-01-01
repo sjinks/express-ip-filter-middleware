@@ -56,8 +56,11 @@ jobs:
           node-version: ${{ matrix.node.version }}
           cache: npm
 
-      - name: Clean install and test
-        run: npm cit
+      - name: Clean install
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test:coverage
 
   release:
     permissions:

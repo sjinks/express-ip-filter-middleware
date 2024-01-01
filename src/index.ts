@@ -1,46 +1,50 @@
 import { BlockList, isIP } from 'node:net';
-import type { NextFunction, Request, Response, RequestHandler } from 'express';
+import type { NextFunction, Request, RequestHandler, Response } from 'express';
 
 export type BlockMode = 'allow' | 'deny';
+export type IPOverrideFunction = (req: Request) => string | undefined;
+
 export interface Options {
     mode: BlockMode;
     allow?: BlockList | undefined;
     deny?: BlockList | undefined;
-    ipOverride?: ((req: Request) => string) | undefined;
+    ipOverride?: IPOverrideFunction | undefined;
 }
 
 export class IPRelatedError extends Error {
     public readonly ip: string;
 
-    constructor(message: string, ip: string) {
+    public constructor(message: string, ip: string) {
         super(message);
         this.ip = ip;
     }
 }
 
 export class IPBlockedError extends IPRelatedError {
-    constructor(message: string, ip: string) {
+    public constructor(message: string, ip: string) {
         super(message, ip);
         this.name = 'IPBlockedError';
     }
 }
 
 export class InvalidIPError extends IPRelatedError {
-    constructor(message: string, ip: string) {
+    public constructor(message: string, ip: string) {
         super(message, ip);
         this.name = 'InvalidIPError';
     }
 }
 
 export class IPUnavailableError extends Error {
-    constructor(message: string) {
+    public constructor(message: string) {
         super(message);
         this.name = 'IPUnavailableError';
     }
 }
 
+const getIP: IPOverrideFunction = (req) => req.ip;
+
 export function ipFilterMiddleware(options: Options): RequestHandler {
-    const { allow = new BlockList(), deny = new BlockList(), ipOverride = (req: Request) => req.ip } = options;
+    const { allow = new BlockList(), deny = new BlockList(), ipOverride = getIP } = options;
 
     return function (req: Request, _res: Response, next: NextFunction): void {
         const ip = ipOverride(req);

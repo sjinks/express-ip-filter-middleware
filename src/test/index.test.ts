@@ -1,7 +1,7 @@
 import { BlockList } from 'node:net';
 import request from 'supertest';
-import express, { type Application, type Request, type Response, type NextFunction } from 'express';
-import { Options, IPBlockedError, ipFilterMiddleware } from '..';
+import express, { type Application, type NextFunction, type Request, type Response } from 'express';
+import { IPBlockedError, Options, ipFilterMiddleware } from '..';
 
 function buildServer(options: Options): Application {
     const server = express();
@@ -15,32 +15,32 @@ function buildServer(options: Options): Application {
     return server;
 }
 
-describe('express-ip-filter-middleware', (): void => {
-    it('should deny everyone in ALLOW mode with empty lists', async (): Promise<unknown> => {
+describe('express-ip-filter-middleware', function (): void {
+    it('should deny everyone in ALLOW mode with empty lists', function () {
         const server = buildServer({ mode: 'allow' });
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(403);
     });
 
-    it('should allow everyone in DENY mode with empty lists', async (): Promise<unknown> => {
+    it('should allow everyone in DENY mode with empty lists', function () {
         const server = buildServer({ mode: 'deny' });
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
     });
 
-    it('should parse CIDRs', async (): Promise<unknown> => {
+    it('should parse CIDRs', function () {
         const allow = new BlockList();
         allow.addSubnet('192.168.2.0', 24);
         const server = buildServer({ mode: 'allow', allow });
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
     });
 
-    it('should favor allow in DENY mode (single IP)', async (): Promise<unknown> => {
+    it('should favor allow in DENY mode (single IP)', function () {
         const list = new BlockList();
         list.addAddress('192.168.2.1');
         const server = buildServer({ mode: 'deny', allow: list, deny: list });
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
     });
 
-    it('should favor allow in BLACKLIST mode (IP range)', async (): Promise<unknown> => {
+    it('should favor allow in BLACKLIST mode (IP range)', function () {
         const allow = new BlockList();
         allow.addAddress('192.168.2.1');
 
@@ -51,7 +51,7 @@ describe('express-ip-filter-middleware', (): void => {
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
     });
 
-    it('should favor deny in ALLOW mode (single IP)', async (): Promise<unknown> => {
+    it('should favor deny in ALLOW mode (single IP)', function () {
         const list = new BlockList();
         list.addAddress('192.168.2.1');
 
@@ -59,7 +59,7 @@ describe('express-ip-filter-middleware', (): void => {
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(403);
     });
 
-    it('should favor deny in ALLOW mode (IP range)', async (): Promise<unknown> => {
+    it('should favor deny in ALLOW mode (IP range)', function () {
         const allow = new BlockList();
         allow.addAddress('192.168.2.1');
 
@@ -70,7 +70,7 @@ describe('express-ip-filter-middleware', (): void => {
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(403);
     });
 
-    it('should take the IP address from ipOverride()', async (): Promise<unknown> => {
+    it('should take the IP address from ipOverride()', function () {
         const allow = new BlockList();
         allow.addAddress('192.168.2.5');
 
@@ -83,7 +83,7 @@ describe('express-ip-filter-middleware', (): void => {
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
     });
 
-    it('should fail if ipOverride() returns a bad IP', async (): Promise<unknown> => {
+    it('should fail if ipOverride() returns a bad IP', function () {
         const allow = new BlockList();
         allow.addAddress('192.168.2.5');
 
@@ -96,14 +96,14 @@ describe('express-ip-filter-middleware', (): void => {
         return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(500);
     });
 
-    it('should be able to parse IPv6 address', async (): Promise<unknown> => {
+    it('should be able to parse IPv6 address', function () {
         const deny = new BlockList();
         deny.addAddress('2001:DB8:85A3::8A2E:370:7334', 'ipv6');
         const server = buildServer({ mode: 'deny', deny });
         return request(server).get('/').set('X-Forwarded-For', '2001:0db8:85a3:0000:0000:8a2e:0370:7334').expect(403);
     });
 
-    it('should be able to parse IPv6 CIDR', async (): Promise<unknown> => {
+    it('should be able to parse IPv6 CIDR', function () {
         const allow = new BlockList();
         allow.addSubnet('2001:DB8:85A3::', 48, 'ipv6');
         const server = buildServer({ mode: 'allow', allow });

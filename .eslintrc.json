@@ -1,20 +1,14 @@
 {
-  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 2019,
-    "project": ["./tsconfig.json"],
-    "createDefaultProgram": true
+    "ecmaVersion": 2021,
+    "project": ["./tsconfig.json"]
   },
-  "plugins": [
-    "@typescript-eslint"
-  ],
   "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
+    "@myrotvorets/myrotvorets-ts",
+    "plugin:mocha/recommended"
   ],
   "env": {
-    "jest": true
+    "node": true,
+    "mocha": true
   }
 }
