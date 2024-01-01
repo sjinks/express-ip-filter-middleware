@@ -1,7 +1,7 @@
 import { BlockList, isIP } from 'node:net';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 
-export type BlockMode = 'allow' | 'deny';
+export type BlockMode = 'whitelist' | 'blacklist';
 export type IPOverrideFunction = (req: Request) => string | undefined;
 
 export interface Options {
@@ -67,18 +67,17 @@ export function ipFilterMiddleware(options: Options): RequestHandler {
 
         /*
             ALLOW if:
-                - `mode` is 'allow' AND `ip` is allowed AND `ip` is NOT denied
-                - `mode` is 'deny' AND `ip` is allowed
-                - `mode` is 'deny' AND `ip` is NOT denied
+                - `mode` is 'whitelist' AND `ip` is allowed AND `ip` is NOT denied
+                - `mode` is 'blacklist' AND `ip` is allowed
+                - `mode` is 'blacklist' AND `ip` is NOT denied
 
-            Given that ALLOW is a binary value (either allow or deny), we can simplify the above to:
+            Given that ALLOW is a binary value (either `whitelist` or `blacklist`), we can simplify the above to:
                 - `ip` is allowed AND `ip` is NOT denied
-                - `mode` is 'deny' AND `ip` is allowed
-                - `mode` is 'deny' AND `ip` is NOT denied
+                - `mode` is 'blacklist' AND (`ip` is allowed OR `ip` is NOT denied)
         */
-        const denyMode = options.mode === 'deny';
+        const black = options.mode === 'blacklist';
         const error =
-            (allowed && !denied) || (denyMode && (allowed || !denied))
+            (allowed && !denied) || (black && (allowed || !denied))
                 ? undefined
                 : new IPBlockedError('Access denied', ip);
         next(error);
