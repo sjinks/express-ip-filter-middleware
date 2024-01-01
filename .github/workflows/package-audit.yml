@@ -1,0 +1,28 @@
+name: Package Audit
+
+on:
+  push:
+    paths:
+      - package.json
+      - package-lock.json
+      - .github/workflows/package-audit.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-npm:
+    name: NPM Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
+        with:
+          node-version: lts/*
+
+      - name: Run audit
+        run: npm audit --production

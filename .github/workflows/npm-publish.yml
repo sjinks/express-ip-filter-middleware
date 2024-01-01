@@ -5,19 +5,14 @@ on:
     types:
       - released
   workflow_dispatch:
-    inputs:
-      npm:
-        default: "yes"
-        description: Publish to NPM?
-        required: true
+
+permissions:
+  contents: read
 
 jobs:
   prepare:
-    permissions:
-      contents: read
     name: Prepare the source code
     runs-on: ubuntu-latest
-    if: github.event_name == 'release' || github.event.inputs.npm == 'yes'
     steps:
       - name: Checkout source
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -30,8 +25,8 @@ jobs:
           node-version: lts/*
           cache: npm
 
-      - name: Run clean install
-        run: npm ci
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
 
       - name: Create tarball
         run: npm pack
@@ -44,35 +39,42 @@ jobs:
           retention-days: 1
 
   publish:
-    permissions:
-      contents: none
     name: Publish package
     runs-on: ubuntu-latest
     needs: prepare
-    strategy:
-      matrix:
-        registry:
-          - npm
-        include:
-          - registry: npm
-            secret: NPM_TOKEN
-            registry_url: https://registry.npmjs.org/
+    permissions:
+      contents: read
+      statuses: write
+      id-token: write
     steps:
+      - name: Set commit status to PENDING
+        uses: myrotvorets/set-commit-status-action@38f3f27c7d52fb381273e95542f07f0fba301307 # v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: pending
+          context: Publish to npm
+          sha: ${{ github.sha }}
+
       - name: Set up Node.js environment
-        if: github.event_name == 'release' || github.event.inputs[matrix.registry] == 'yes'
         uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
-          node-version: lts/*
-          registry-url: ${{ matrix.registry_url }}
+          registry-url: https://registry.npmjs.org/
 
       - name: Download tarball
-        if: github.event_name == 'release' || github.event.inputs[matrix.registry] == 'yes'
         uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4
         with:
           name: package
 
       - name: Publish package
-        if: github.event_name == 'release' || github.event.inputs[matrix.registry] == 'yes'
         run: npm publish *.tgz
         env:
-          NODE_AUTH_TOKEN: ${{ secrets[matrix.secret] }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Set final commit status
+        uses: myrotvorets/set-commit-status-action@38f3f27c7d52fb381273e95542f07f0fba301307 # v2.0.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          context: Publish to npm
+          sha: ${{ github.sha }}
+        if: always()

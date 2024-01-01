@@ -1,11 +1,11 @@
 {
   "name": "express-ip-filter-middleware",
   "version": "1.0.22",
+  "description": "Express middleware for access control using IP / CIDR lists",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "lint": "eslint -f gha .",
-    "pretest": "npm run lint",
     "test": "mocha",
     "test:coverage": "nyc mocha",
     "prepare": "npm run build"
@@ -49,5 +49,7 @@
     "dist/index.js",
     "dist/index.js.map"
   ],
-  "description": "Express middleware for access control using IP / CIDR lists"
+  "publishConfig": {
+    "provenance": true
+  }
 }
