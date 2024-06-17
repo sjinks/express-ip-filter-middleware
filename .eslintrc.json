@@ -4,11 +4,9 @@
     "project": ["./tsconfig.json"]
   },
   "extends": [
-    "@myrotvorets/myrotvorets-ts",
-    "plugin:mocha/recommended"
+    "@myrotvorets/myrotvorets-ts"
   ],
   "env": {
-    "node": true,
-    "mocha": true
+    "node": true
   }
 }
