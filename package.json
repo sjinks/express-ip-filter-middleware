@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint -f gha .",
-    "test": "mocha",
-    "test:coverage": "nyc mocha",
+    "test": "node --require ts-node/register --test-reporter=spec --test-reporter-destination=stdout --test-reporter=node-reporter-gha --test-reporter-destination=stdout --test src/test/index.test.ts",
+    "test:coverage": "nyc npm test",
     "prepare": "npm run build"
   },
   "keywords": [
@@ -24,12 +24,10 @@
   "devDependencies": {
     "@myrotvorets/eslint-config-myrotvorets-ts": "^2.24.0",
     "@types/express": "^4.17.11",
-    "@types/mocha": "^10.0.6",
     "@types/supertest": "^6.0.0",
     "eslint-formatter-gha": "^1.4.3",
-    "eslint-plugin-mocha": "^10.2.0",
     "express": "^4.17.1",
-    "mocha": "^10.2.0",
+    "node-reporter-gha": "^2.0.2",
     "nyc": "^17.0.0",
     "supertest": "^7.0.0",
     "ts-node": "^10.9.2",
