@@ -1,3 +1,5 @@
+/* eslint-disable sonarjs/no-hardcoded-ip */
+/* eslint-disable sonarjs/assertions-in-tests */
 import { BlockList } from 'node:net';
 import { describe, it } from 'node:test';
 import request from 'supertest';
@@ -16,7 +18,7 @@ function buildServer(options: Options): Application {
     return server;
 }
 
-const promiseVoid = () => Promise.resolve();
+const promiseVoid = (): Promise<void> => Promise.resolve();
 
 void describe('express-ip-filter-middleware', async () => {
     await it('should deny everyone in WHITELIST mode with empty lists', () => {
