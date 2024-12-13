@@ -22,7 +22,7 @@
   "author": "Volodymyr Kolesnykov <volodymyr@wildwolf.name> (https://wildwolf.name/)",
   "license": "MIT",
   "devDependencies": {
-    "@myrotvorets/eslint-config-myrotvorets-ts": "^2.24.0",
+    "@myrotvorets/eslint-config-myrotvorets-ts": "^3.0.0",
     "@types/express": "^4.17.11",
     "@types/supertest": "^6.0.0",
     "eslint-formatter-gha": "^1.4.3",
