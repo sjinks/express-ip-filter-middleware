@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-redundant-optional */
 import { BlockList, isIP } from 'node:net';
 import type { NextFunction, Request, RequestHandler, Response } from 'express';
 

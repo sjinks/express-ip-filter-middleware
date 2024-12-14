@@ -11,7 +11,6 @@ function buildServer(options: Options): Application {
     server.enable('trust proxy');
     server.use(ipFilterMiddleware(options));
     server.use((_req: Request, res: Response): unknown => res.json({ status: 200 }));
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     server.use((err: Error, _req: Request, res: Response, _next: NextFunction): unknown =>
         res.status(err instanceof IPBlockedError ? 403 : 500).json(err),
     );
