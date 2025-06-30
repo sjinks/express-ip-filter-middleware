@@ -10,10 +10,12 @@ function buildServer(options: Options): Application {
     const server = express();
     server.enable('trust proxy');
     server.use(ipFilterMiddleware(options));
-    server.use((_req: Request, res: Response): unknown => res.json({ status: 200 }));
-    server.use((err: Error, _req: Request, res: Response, _next: NextFunction): unknown =>
-        res.status(err instanceof IPBlockedError ? 403 : 500).json(err),
-    );
+    server.use((_req: Request, res: Response): void => {
+        res.json({ status: 200 });
+    });
+    server.use((err: Error, _req: Request, res: Response, _next: NextFunction): void => {
+        res.status(err instanceof IPBlockedError ? 403 : 500).json(err);
+    });
     return server;
 }
 
