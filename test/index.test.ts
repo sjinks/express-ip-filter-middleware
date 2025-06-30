@@ -4,7 +4,7 @@ import { BlockList } from 'node:net';
 import { describe, it } from 'node:test';
 import request from 'supertest';
 import express, { type Application, type NextFunction, type Request, type Response } from 'express';
-import { IPBlockedError, Options, ipFilterMiddleware } from '..';
+import { IPBlockedError, Options, ipFilterMiddleware } from '../src';
 
 function buildServer(options: Options): Application {
     const server = express();
@@ -19,35 +19,33 @@ function buildServer(options: Options): Application {
     return server;
 }
 
-const promiseVoid = (): Promise<void> => Promise.resolve();
-
 void describe('express-ip-filter-middleware', async () => {
-    await it('should deny everyone in WHITELIST mode with empty lists', () => {
+    await it('should deny everyone in WHITELIST mode with empty lists', async () => {
         const server = buildServer({ mode: 'whitelist' });
-        return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(403).then(promiseVoid);
+        await request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(403);
     });
 
-    await it('should allow everyone in BLACKLIST mode with empty lists', () => {
+    await it('should allow everyone in BLACKLIST mode with empty lists', async () => {
         const server = buildServer({ mode: 'blacklist' });
-        return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200).then(promiseVoid);
+        await request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
     });
 
-    await it('should favor allow in BLACKLIST mode', () => {
+    await it('should favor allow in BLACKLIST mode', async () => {
         const list = new BlockList();
         list.addAddress('192.168.2.1');
         const server = buildServer({ mode: 'blacklist', allow: list, deny: list });
-        return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200).then(promiseVoid);
+        await request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
     });
 
-    await it('should favor deny in WHITELIST mode', () => {
+    await it('should favor deny in WHITELIST mode', async () => {
         const list = new BlockList();
         list.addAddress('192.168.2.1');
 
         const server = buildServer({ mode: 'whitelist', allow: list, deny: list });
-        return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(403).then(promiseVoid);
+        await request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(403);
     });
 
-    await it('should take the IP address from ipOverride()', () => {
+    await it('should take the IP address from ipOverride()', async () => {
         const allow = new BlockList();
         allow.addAddress('192.168.2.5');
 
@@ -57,24 +55,24 @@ void describe('express-ip-filter-middleware', async () => {
             ipOverride: () => '::ffff:192.168.2.5',
         });
 
-        return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200).then(promiseVoid);
+        await request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(200);
     });
 
-    await it('should fail if ipOverride() returns a bad IP', () => {
+    await it('should fail if ipOverride() returns a bad IP', async () => {
         const server = buildServer({
             mode: 'whitelist',
             ipOverride: () => '192.168.2.500',
         });
 
-        return request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(500).then(promiseVoid);
+        await request(server).get('/').set('X-Forwarded-For', '192.168.2.1').expect(500);
     });
 
-    await it('should fail if IP address cannot be determined', () => {
+    await it('should fail if IP address cannot be determined', async () => {
         const server = buildServer({
             mode: 'whitelist',
             ipOverride: () => undefined,
         });
 
-        return request(server).get('/').expect(500).then(promiseVoid);
+        await request(server).get('/').expect(500);
     });
 });
