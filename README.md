@@ -1,6 +1,7 @@
 # express-ip-filter-middleware
 
-![Build and Test CI](https://github.com/sjinks/express-ip-filter-middleware/workflows/Build%20and%20Test%20CI/badge.svg)
+[![Build & Test](https://github.com/sjinks/express-ip-filter-middleware/actions/workflows/build-test.yml/badge.svg)](https://github.com/sjinks/express-ip-filter-middleware/actions/workflows/build-test.yml)
+[![CodeQL](https://github.com/sjinks/express-ip-filter-middleware/actions/workflows/codeql.yml/badge.svg)](https://github.com/sjinks/express-ip-filter-middleware/actions/workflows/codeql.yml)
 
 Express middleware for access control using IP / CIDR lists.
 
