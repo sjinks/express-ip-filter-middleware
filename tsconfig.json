@@ -4,7 +4,7 @@
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
         "outDir": "./dist",
-        "rootDir": "./src",
+        "rootDirs": ["./src", "./test"],
         "sourceMap": true,
         "declaration": true,
         "removeComments": false,

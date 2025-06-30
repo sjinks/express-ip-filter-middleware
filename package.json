@@ -2,11 +2,11 @@
   "name": "express-ip-filter-middleware",
   "version": "2.0.1",
   "description": "Express middleware for access control using IP / CIDR lists",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
     "lint": "eslint -f gha .",
-    "test": "node --require ts-node/register --test-reporter=spec --test-reporter-destination=stdout --test-reporter=node-reporter-gha --test-reporter-destination=stdout --test src/test/index.test.ts",
+    "test": "node --require ts-node/register --test-reporter=spec --test-reporter-destination=stdout --test-reporter=node-reporter-gha --test-reporter-destination=stdout --test test/index.test.ts",
     "test:coverage": "nyc npm test",
     "prepare": "npm run build"
   },
@@ -37,15 +37,15 @@
     "type": "git",
     "url": "git+https://github.com/sjinks/express-ip-filter-middleware.git"
   },
-  "typings": "dist/index.d.ts",
+  "typings": "dist/src/index.d.ts",
   "bugs": {
     "url": "https://github.com/sjinks/express-ip-filter-middleware/issues"
   },
   "homepage": "https://github.com/sjinks/express-ip-filter-middleware#readme",
   "files": [
-    "dist/index.d.ts",
-    "dist/index.js",
-    "dist/index.js.map"
+    "dist/src/index.d.ts",
+    "dist/src/index.js",
+    "dist/src/index.js.map"
   ],
   "publishConfig": {
     "provenance": true
