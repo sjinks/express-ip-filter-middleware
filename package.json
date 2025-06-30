@@ -7,7 +7,7 @@
     "build": "tsc",
     "lint": "eslint -f gha .",
     "test": "node --require ts-node/register/transpile-only --test-reporter=spec --test-reporter-destination=stdout --test-reporter=node-reporter-gha --test-reporter-destination=stdout --test test/index.test.ts",
-    "test:coverage": "node --require ts-node/register/transpile-only --test --experimental-test-coverage --test-coverage-include='src/**' --test-reporter=spec --test-reporter-destination=stdout test/index.test.ts",
+    "test:coverage": "node --require ts-node/register/transpile-only --test --experimental-test-coverage --test-coverage-include=\"src/**\" --test-reporter=spec --test-reporter-destination=stdout test/index.test.ts",
     "prepare": "npm run build"
   },
   "keywords": [
