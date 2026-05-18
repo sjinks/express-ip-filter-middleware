@@ -30,7 +30,7 @@
     "node-reporter-gha": "^2.0.5",
     "supertest": "^7.1.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.0"
   },
   "repository": {
     "type": "git",
